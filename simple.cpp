@@ -1,26 +1,23 @@
 #include <stdio.h>
 #include <dirent.h>
+#include <pcl/pcl_base.h>
+#include <pcl/point_types.h>
+#include <vector>
+#include <rosbag/bag.h>
+#include <rosbag/view.h>
+using namespace std;
 
-
-static int
-one (const struct dirent *unused)
-{
-    if(unused->d_name[0] == '.'){
-        return 0;
+int main(){
+    rosbag::Bag bag;
+    bag.open("./imu.bag");
+    cout << bag.getSize() << endl;
+    cout << bag.getFileName() << endl;
+    if(!bag.isOpen()){
+        perror("open bag fault in : ");
+        return -1;
     }
     
-  return 1;
-}
-
-int
-main (void)
-{
-  DIR* dir;
-  dir = opendir("./");
-  struct dirent * ep;
-  ep = readdir(dir);
-  puts(ep->d_name);
-  ep = readdir(dir);
-  puts(ep->d_name);
-  return 0;
+    rosbag::View view(bag, rosbag::TopicQuery("/points_raw"));
+    int num = view.size();
+    printf("viwe num = %d", num);
 }
